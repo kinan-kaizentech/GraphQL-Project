@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: #fafafa
+}
+
+input {
+  height: 48px;
+  border-radius: 4px;
+  padding: 8px;
+  border: 1px solid #eee;
+  font-size: 14px;
+}
+
+.input-wrapper {
+  display: flex;
+  flex-direction: column;
+
+}
+.input-wrapper span {
+  color: #ff0000;
+  font-size: 12px;
+}

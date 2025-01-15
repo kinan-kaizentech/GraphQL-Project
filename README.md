@@ -20,8 +20,8 @@ This is a full-stack Todo application built with Next.js, Apollo Client, and Sup
 1. **Clone the repository**:
 
    ```bash
-   git clone https://github.com/yourusername/graphql-todo-app.git
-   cd graphql-todo-app
+   git clone https://github.com/kinan-kaizentech/GraphQL-Project
+   cd GraphQL-Project
    ```
 
 2. **Install dependencies**:
@@ -59,12 +59,6 @@ This is a full-stack Todo application built with Next.js, Apollo Client, and Sup
 ## Database Schema
 
 ![Database Schema](db_schema.png)
-
-## Key Files
-
-- **GraphQL Schema and Resolvers**: Defines the GraphQL API structure and logic.
-- **Apollo Client Setup**: Configures the Apollo Client for data fetching.
-- **Supabase Client Setup**: Initializes the Supabase client for database interactions.
 
 ## Useful Links
 

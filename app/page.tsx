@@ -48,16 +48,6 @@ const CREATE_TODO = gql`
   }
 `;
 
-const CREATE_USER = gql`
-  mutation CreateUser($name: String!, $email: String!) {
-    createUser(name: $name, email: $email) {
-      id
-      name
-      email
-    }
-  }
-`;
-
 const ASSIGN_TODO = gql`
   mutation AssignTodo($todoId: ID!, $userId: ID!) {
     assignTodoToUser(todoId: $todoId, userId: $userId) {
@@ -85,9 +75,20 @@ const UNASSIGN_TODO = gql`
 `;
 
 const UPDATE_TODO = gql`
-  mutation UpdateTodo($id: ID!, $completed: Boolean, $flagged: Boolean) {
-    updateTodo(id: $id, completed: $completed, flagged: $flagged) {
+  mutation UpdateTodo(
+    $id: ID!
+    $title: String
+    $completed: Boolean
+    $flagged: Boolean
+  ) {
+    updateTodo(
+      id: $id
+      title: $title
+      completed: $completed
+      flagged: $flagged
+    ) {
       id
+      title
       completed
       flagged
     }
@@ -130,11 +131,14 @@ interface Todo {
   assignedUsers: User[];
 }
 
+interface EditingTodo {
+  id: string;
+  title: string;
+}
+
 export default function Home() {
   const [newTodo, setNewTodo] = useState("");
-  const [newUserName, setNewUserName] = useState("");
-  const [newUserEmail, setNewUserEmail] = useState("");
-  const [showUserForm, setShowUserForm] = useState(false);
+  const [editingTodo, setEditingTodo] = useState<EditingTodo | null>(null);
   const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set());
   const [isDeletingAll, setIsDeletingAll] = useState(false);
 
@@ -149,9 +153,6 @@ export default function Home() {
   const [createTodo] = useMutation(CREATE_TODO, {
     refetchQueries: [{ query: GET_TODOS }],
   });
-  const [createUser] = useMutation(CREATE_USER, {
-    refetchQueries: [{ query: GET_USERS }],
-  });
   const [assignTodo] = useMutation(ASSIGN_TODO, {
     refetchQueries: [{ query: GET_TODOS }],
   });
@@ -165,7 +166,6 @@ export default function Home() {
   const [deleteAllTodos] = useMutation(DELETE_ALL_TODOS, {
     refetchQueries: [{ query: GET_TODOS }],
   });
-  const [toggleFlag] = useMutation(TOGGLE_FLAG);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -176,22 +176,6 @@ export default function Home() {
       setNewTodo("");
     } catch (err) {
       console.error("Error creating todo:", err);
-    }
-  };
-
-  const handleCreateUser = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newUserName.trim() || !newUserEmail.trim()) return;
-
-    try {
-      await createUser({
-        variables: { name: newUserName, email: newUserEmail },
-      });
-      setNewUserName("");
-      setNewUserEmail("");
-      setShowUserForm(false);
-    } catch (err) {
-      console.error("Error creating user:", err);
     }
   };
 
@@ -255,6 +239,23 @@ export default function Home() {
     }
   };
 
+  const handleUpdateTitle = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingTodo || !editingTodo.title.trim()) return;
+
+    try {
+      await updateTodo({
+        variables: {
+          id: editingTodo.id,
+          title: editingTodo.title,
+        },
+      });
+      setEditingTodo(null);
+    } catch (err) {
+      console.error("Error updating todo:", err);
+    }
+  };
+
   if (todosLoading || usersLoading)
     return <div className="p-4">Loading...</div>;
   if (todosError)
@@ -271,44 +272,8 @@ export default function Home() {
           >
             Manage Users
           </Link>
-          <button
-            onClick={() => setShowUserForm(!showUserForm)}
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-          >
-            {showUserForm ? "Cancel" : "Add User"}
-          </button>
         </div>
       </div>
-
-      {showUserForm && (
-        <form
-          onSubmit={handleCreateUser}
-          className="mb-4 p-4 bg-gray-50 rounded-lg"
-        >
-          <div className="flex gap-4">
-            <input
-              type="text"
-              value={newUserName}
-              onChange={(e) => setNewUserName(e.target.value)}
-              placeholder="User name"
-              className="flex-1 p-2 border rounded"
-            />
-            <input
-              type="email"
-              value={newUserEmail}
-              onChange={(e) => setNewUserEmail(e.target.value)}
-              placeholder="Email"
-              className="flex-1 p-2 border rounded"
-            />
-            <button
-              type="submit"
-              className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-            >
-              Create User
-            </button>
-          </div>
-        </form>
-      )}
 
       <form onSubmit={handleSubmit} className="mb-4">
         <input
@@ -334,13 +299,44 @@ export default function Home() {
                   onChange={() => handleToggle(todo.id, todo.completed)}
                   className="h-5 w-5 rounded border-gray-300"
                 />
-                <span
-                  className={`${
-                    todo.completed ? "line-through text-gray-500" : ""
-                  }`}
-                >
-                  {todo.title}
-                </span>
+                {editingTodo?.id === todo.id ? (
+                  <form
+                    onSubmit={handleUpdateTitle}
+                    className="flex items-center space-x-2"
+                  >
+                    <input
+                      type="text"
+                      value={editingTodo.title}
+                      onChange={(e) =>
+                        setEditingTodo({
+                          ...editingTodo,
+                          title: e.target.value,
+                        })
+                      }
+                      className="p-1 border rounded"
+                      autoFocus
+                    />
+                    <button
+                      type="button"
+                      onClick={handleUpdateTitle}
+                      className="text-green-600 hover:text-green-900"
+                    >
+                      Save
+                    </button>
+                  </form>
+                ) : (
+                  <span
+                    className={`${
+                      todo.completed ? "line-through text-gray-500" : ""
+                    } cursor-pointer`}
+                    onClick={() =>
+                      setEditingTodo({ id: todo.id, title: todo.title })
+                    }
+                    title="Click to edit"
+                  >
+                    {todo.title}
+                  </span>
+                )}
               </div>
               <div className="flex items-center space-x-2">
                 <button

@@ -28,7 +28,7 @@ const typeDefs = `
 
   type Mutation {
     createTodo(title: String!): Todo!
-    updateTodo(id: ID!, completed: Boolean, flagged: Boolean): Todo!
+    updateTodo(id: ID!, title: String, completed: Boolean, flagged: Boolean): Todo!
     deleteTodo(id: ID!): Boolean!
     deleteAllTodos: Boolean!
     createUser(name: String!, email: String!): User!
@@ -138,11 +138,17 @@ const resolvers = {
       _: unknown,
       {
         id,
+        title,
         completed,
         flagged,
-      }: { id: string; completed?: boolean; flagged?: boolean }
+      }: { id: string; title?: string; completed?: boolean; flagged?: boolean }
     ) => {
-      const updates: { completed?: boolean; flagged?: boolean } = {};
+      const updates: {
+        title?: string;
+        completed?: boolean;
+        flagged?: boolean;
+      } = {};
+      if (title !== undefined) updates.title = title;
       if (completed !== undefined) updates.completed = completed;
       if (flagged !== undefined) updates.flagged = flagged;
 

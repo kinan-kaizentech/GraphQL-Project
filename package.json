@@ -12,20 +12,12 @@
     "@apollo/client": "^3.8.8",
     "@apollo/server": "^4.9.5",
     "@as-integrations/next": "^3.0.0",
-    "@supabase/auth-helpers-nextjs": "^0.10.0",
     "@supabase/supabase-js": "^2.47.10",
-    "@types/bcryptjs": "^2.4.6",
-    "@types/jsonwebtoken": "^9.0.7",
-    "bcryptjs": "^2.4.3",
     "graphql": "^16.8.1",
-    "graphql-subscriptions": "^3.0.0",
     "graphql-ws": "^5.16.0",
-    "jsonwebtoken": "^9.0.2",
     "next": "14.0.3",
     "react": "^18",
-    "react-dom": "^18",
-    "react-hook-form": "^7.48.2",
-    "ws": "^8.18.0"
+    "react-dom": "^18"
   },
   "devDependencies": {
     "@types/node": "^20",

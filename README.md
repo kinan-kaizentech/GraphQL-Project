@@ -56,6 +56,10 @@ This is a full-stack Todo application built with Next.js, Apollo Client, and Sup
 - **Frontend**: Built with Next.js and Apollo Client for a seamless React experience.
 - **Backend**: Utilizes Apollo Server and Supabase for data management and storage.
 
+## Database Schema
+
+![Database Schema](db_schema.png)
+
 ## Key Files
 
 - **GraphQL Schema and Resolvers**: Defines the GraphQL API structure and logic.

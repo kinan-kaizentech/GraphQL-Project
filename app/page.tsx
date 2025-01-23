@@ -325,17 +325,29 @@ export default function Home() {
                     </button>
                   </form>
                 ) : (
-                  <span
-                    className={`${
-                      todo.completed ? "line-through text-gray-500" : ""
-                    } cursor-pointer`}
-                    onClick={() =>
-                      setEditingTodo({ id: todo.id, title: todo.title })
-                    }
-                    title="Click to edit"
-                  >
-                    {todo.title}
-                  </span>
+                  <div className="flex items-center space-x-2">
+                    <span
+                      className={`${
+                        todo.completed ? "line-through text-gray-500" : ""
+                      } cursor-pointer`}
+                      onClick={() =>
+                        setEditingTodo({ id: todo.id, title: todo.title })
+                      }
+                      title="Click to edit"
+                    >
+                      {todo.title}
+                    </span>
+                    <span className="text-sm text-gray-500">
+                      {new Date(todo.created_at).toLocaleString("en-GB", {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: false,
+                      })}
+                    </span>
+                  </div>
                 )}
               </div>
               <div className="flex items-center space-x-2">
